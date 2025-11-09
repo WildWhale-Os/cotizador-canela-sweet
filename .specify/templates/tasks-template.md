@@ -8,9 +8,13 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: The tasks below include test tasks. Tests are MANDATORY for all P1 and P2 features per constitution, and OPTIONAL for P3+ unless specifically required. Key requirements:
 
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+- P1 features MUST have: unit tests (80% coverage), integration/e2e tests for critical paths
+- P2 features MUST have: unit tests (80% coverage), at least one integration test
+- P3+ features: test coverage requirements specified in feature spec
+
+**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story. Tests MUST be written first (TDD) for business logic and critical paths.
 
 ## Format: `[ID] [P?] [Story] Description`
 
