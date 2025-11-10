@@ -32,6 +32,41 @@ de administración para la autorización y gestión de usuarios. Se priorizan pr
 the user — MUST be stored in environment variables (e.g., `DATABASE_URL`) and never
 hard-coded in source. Path: `env.DATABASE_URL`.
 
+## Integration patterns & implementation notes
+
+These are concrete integration patterns discovered during research and recommended for this feature:
+
+- Better Auth + Next.js
+  - Use Better Auth as the authentication engine and include the `nextCookies()` plugin so Server Actions that call the Better Auth API will set cookies automatically.
+  - Mount the Better Auth handler at `app/api/auth/[...all]/route.ts` using the provided Next adapter (e.g., `toNextJsHandler(auth)`).
+  - Use `auth.api.signInEmail({ body })` inside Server Actions to perform sign-in; errors should be mapped to safe, generic messages for the UI.
+
+- Drizzle ORM (app data)
+  - Use Drizzle for app tables and migrations while letting Better Auth manage its own auth tables in the same Postgres instance.
+  - Create a thin Drizzle client in `lib/db.ts` using `pg` Pool + `drizzle(pool)` and reuse it in service layers.
+  - Keep Better Auth tables read-only from your app where possible; reference `session.user.id` from Better Auth to join app profiles.
+
+- ArkType + React Hook Form
+  - Define ArkType schemas once in `app/(auth)/schema.ts` and reuse them on client and server.
+  - On the client use `react-hook-form` with an ArkType resolver (via `@hookform/resolvers/*` or a small adapter) or map ArkType errors to `setError` manually.
+  - Validate again on the server inside Server Actions using the same ArkType schema.
+
+- Server Actions pattern
+  - Server Actions are the recommended mutation surface for login flows; implement a `loginAction` in `app/(auth)/login/actions.ts` marked with `"use server"`.
+  - The action should: validate input (ArkType), call `auth.api.signInEmail`, and return a compact result object that the client form can use to show errors or redirect.
+
+- Cookie & security defaults (enforce in CI & review)
+  - Cookies set by Better Auth via `nextCookies()` must be `httpOnly: true`, `secure: true` in production, and `sameSite: "lax"` (or `strict` if justified).
+  - If additional persistent cookies (remember-me) are used, set `httpOnly`, `secure`, `sameSite`, `path: '/'` and explicit `maxAge` consistent with `FR-009`.
+
+### Testing & environments
+
+- Unit: ArkType schemas, small helpers (session helpers) and service functions mocked.
+- Integration: spin up test Postgres (Docker) and run Better Auth's migrations, then test Server Actions via route handlers or a controlled server harness.
+- E2E: Playwright tests visiting `/login`, submitting valid/invalid credentials, verifying redirect and error message parity.
+
+These patterns will be translated into explicit tasks in `tasks.md` (bootstrapping files, Server Action, ArkType schemas, Drizzle client, tests and CI changes).
+
 **Testing**: Vitest for unit, Testing Library for component tests, Playwright for e2e.
 CI must run linters, unit tests, integration tests and report coverage. Coverage gate: 80% for
 critical modules (auth flows).

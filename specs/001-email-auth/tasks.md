@@ -44,6 +44,22 @@ description: "Task list for feature 001-email-auth (email auth + password reset 
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
+## Integration implementation tasks (concrete files & wiring)
+
+These tasks implement the researched integration pattern: Better Auth bootstrapping, Drizzle client, ArkType schema reuse, Server Action wiring and security cookie defaults.
+
+- [ ] T050 Create Better Auth bootstrap `lib/auth.ts` that initializes Better Auth and includes `nextCookies()` plugin (document config) — file: `lib/auth.ts`
+- [ ] T051 Create Next API adapter route `app/api/auth/[...all]/route.ts` that mounts Better Auth handler using the Next adapter (e.g., `toNextJsHandler(auth)`) — file: `app/api/auth/[...all]/route.ts`
+- [ ] T052 Create Drizzle client `lib/db.ts` using `pg` Pool + `drizzle(pool)` and export `db` for services — file: `lib/db.ts`
+- [ ] T053 Create ArkType shared schemas `app/(auth)/schema.ts` with `LoginSchema`, `ResetSchema`, `InvitationSchema` and export types — file: `app/(auth)/schema.ts`
+- [ ] T054 Implement Server Action login `app/(auth)/login/actions.ts` ("use server") that: validates via ArkType, calls `auth.api.signInEmail`, maps errors to generic messages and returns compact result — file: `app/(auth)/login/actions.ts`
+- [ ] T055 Implement client login form `app/(auth)/login/LoginForm.tsx` using React Hook Form + ArkType resolver and calling the Server Action `loginAction` — file: `app/(auth)/login/LoginForm.tsx`
+- [ ] T056 Add unit test for `loginAction` mocking `auth.api.signInEmail` in `tests/unit/actions/loginAction.test.ts`
+- [ ] T057 Add accessibility checks for login & reset pages: axe/jest-axe tests `tests/unit/accessibility/login.a11y.test.ts` and `tests/unit/accessibility/reset.a11y.test.ts` (WCAG 2.1 AA focus)
+- [ ] T058 Implement 'remember me' persistent session option in `lib/auth/session.ts` and add tests `tests/unit/lib/session-remember.test.ts` (ensure revocation endpoint exists)
+- [ ] T059 Add a runbook task and basic rate-limiting middleware `lib/middleware/rateLimit.ts` plus runbook `docs/runbook/auth-rate-limiting.md`
+- [ ] T060 Update CI workflow `.github/workflows/ci.yml` to enforce coverage gates globally for auth-critical modules and add step names + failure conditions — file: `.github/workflows/ci.yml`
+
 ---
 
 ## Phase 3: User Story 1 - Iniciar sesión con correo y contraseña (Priority: P1) 🎯 MVP
