@@ -19,11 +19,11 @@ description: "Task list for feature 001-email-auth (email auth + password reset 
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create Next.js 16 App Router foundation in `app/` and `components/` per plan (create `app/`, `components/`, `lib/`, `db/`, `tests/`) 
-- [ ] T002 Initialize package manifest and tooling: add `package.json`, install Next.js 16, React, Drizzle, Better Auth, Shadcn/UI, React Hook Form, ArkType, Sonner, Vitest, Playwright (document exact versions) — update `package.json`
-- [ ] T003 [P] Create `.env.example` with required variables (`DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NODE_ENV`) at repository root
-- [ ] T004 Add linting and formatting config files (ESLint, Prettier) and CI lint job placeholder in `.github/workflows/ci.yml`
-- [ ] T005 [P] Add base CI workflow skeleton `.github/workflows/ci.yml` with steps: install, lint, test, coverage report (placeholders for integration/e2e jobs)
+ [X] T001 Create Next.js 16 App Router foundation in `app/` and `components/` per plan (create `app/`, `components/`, `lib/`, `db/`, `tests/`) 
+ [X] T002 Initialize package manifest and tooling: add `package.json`, install Next.js 16, React, Drizzle, Better Auth, Shadcn/UI, React Hook Form, ArkType, Sonner, Vitest, Playwright (document exact versions) — update `package.json`
+ [X] T003 [P] Create `.env.example` with required variables (`DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NODE_ENV`) at repository root
+ [X] T004 Add linting and formatting config files (ESLint, Prettier) and CI lint job placeholder in `.github/workflows/ci.yml`
+ [X] T005 [P] Add base CI workflow skeleton `.github/workflows/ci.yml` with steps: install, lint, test, coverage report (placeholders for integration/e2e jobs)
 
 ---
 
@@ -40,13 +40,13 @@ description: "Task list for feature 001-email-auth (email auth + password reset 
 - [ ] T012 [P] Add Sonner configuration wrapper `components/sonner.tsx` for toasts
 - [ ] T013 [P] Add Shadcn/UI theme wrapper and base components in `components/ui/` (Form, Input, Button wrappers)
 - [ ] T014 Create Drizzle seed script to create admin user placeholder (use env override) in `db/seed/admin-seed.ts` (document in quickstart)
-- [ ] T015 [P] Add test harness configuration: Vitest config `vitest.config.ts`, Testing Library setup `tests/setup.ts`, Playwright config `playwright.config.ts`
-
-**Checkpoint**: Foundation ready - user story implementation can now begin in parallel
-
-## Integration implementation tasks (concrete files & wiring)
-
-These tasks implement the researched integration pattern: Better Auth bootstrapping, Drizzle client, ArkType schema reuse, Server Action wiring and security cookie defaults.
+ [X] T015 [P] Add test harness configuration: Vitest config `vitest.config.ts`, Testing Library setup `tests/setup.ts`, Playwright config `playwright.config.ts`
+ [X] T050 Create Better Auth bootstrap `lib/auth.ts` that initializes Better Auth and includes `nextCookies()` plugin (document config) — file: `lib/auth.ts`
+ [X] T051 Create Next API adapter route `app/api/auth/[...all]/route.ts` that mounts Better Auth handler using the Next adapter (e.g., `toNextJsHandler(auth)`) — file: `app/api/auth/[...all]/route.ts`
+ [X] T052 Create Drizzle client `lib/db.ts` using `pg` Pool + `drizzle(pool)` and export `db` for services — file: `lib/db.ts`
+ [X] T053 Create ArkType shared schemas `app/(auth)/schema.ts` with `LoginSchema`, `ResetSchema`, `InvitationSchema` and export types — file: `app/(auth)/schema.ts`
+ [X] T054 Implement Server Action login `app/(auth)/login/actions.ts` ("use server") that: validates via ArkType, calls `auth.api.signInEmail`, maps errors to generic messages and returns compact result — file: `app/(auth)/login/actions.ts`
+ [X] T055 Implement client login form `app/(auth)/login/LoginForm.tsx` using React Hook Form + ArkType resolver and calling the Server Action `loginAction` — file: `app/(auth)/login/LoginForm.tsx`
 
 - [ ] T050 Create Better Auth bootstrap `lib/auth.ts` that initializes Better Auth and includes `nextCookies()` plugin (document config) — file: `lib/auth.ts`
 - [ ] T051 Create Next API adapter route `app/api/auth/[...all]/route.ts` that mounts Better Auth handler using the Next adapter (e.g., `toNextJsHandler(auth)`) — file: `app/api/auth/[...all]/route.ts`
