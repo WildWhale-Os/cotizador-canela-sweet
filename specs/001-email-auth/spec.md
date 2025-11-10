@@ -52,6 +52,8 @@ Como usuario administrador, quiero acceder a un panel donde pueda crear, editar 
 1. **Given** un usuario con rol administrador, **When** accede al dashboard, **Then** ve la opción "Gestión de usuarios" y puede crear/editar/inhabilitar cuentas.
 2. **Given** un usuario sin rol administrador, **When** accede al dashboard, **Then** no ve ni puede acceder a las funcionalidades de gestión de usuarios.
 
+3. **Given** un administrador crea una nueva cuenta para un usuario, **When** confirma la creación, **Then** el sistema envía un enlace de invitación por correo que permite al nuevo usuario establecer su contraseña y verificar su correo antes de iniciar sesión.
+
 ---
 
 ### Edge Cases
@@ -74,6 +76,9 @@ Como usuario administrador, quiero acceder a un panel donde pueda crear, editar 
 - **FR-007**: El sistema DEBE permitir que un administrador cree, edite e inhabilite cuentas de usuario desde el dashboard.
 - **FR-008**: Todas las operaciones críticas DEBEN poder verificarse mediante pruebas automatizadas (unitarias e integración/end-to-end para flujos P1).
 
+- **FR-009**: El sistema DEBE manejar sesiones con expiración por defecto (8 horas de inactividad) y soportar una opción "remember me" opcional que permita sesiones persistentes (configurable, p.ej. 30 días) con posibilidad de revocación.
+- **FR-010**: Cuando un administrador crea una cuenta, el sistema DEBE enviar un enlace de invitación/establecimiento de contraseña que permita al usuario verificar su correo y establecer su contraseña de forma segura (enlace single-use con expiración).
+
 ### Assumptions
 
 - No se integrará SSO en esta fase; el método de autenticación es por correo y contraseña tradicionales.
@@ -82,10 +87,15 @@ Como usuario administrador, quiero acceder a un panel donde pueda crear, editar 
 - Política de contraseña por defecto: mínimo 8 caracteres; requisitos más estrictos quedan como mejora futura.
 - No se definen límites de bloqueo (account lock) en este spec; medidas de mitigación (rate limiting, captchas) serán implementadas según el runbook operativo.
 
+- Sesión por defecto: la sesión expira tras 8 horas de inactividad; se ofrecerá una opción "remember me" opcional para sesiones persistentes (p.ej. 30 días) que debe poder revocarse.
+- Cuando un administrador crea una cuenta, el flujo usará un enlace de invitación single-use que expira (por defecto 24 horas) para establecer contraseña y verificar correo.
+
 ### Key Entities *(include if feature involves data)*
 
 - **User**: Identificador, email (normalizado), password_hash, roles (e.g., admin, user), is_active, created_at, updated_at.
 - **PasswordResetRequest**: token, user_id, created_at, expires_at, used_at, client_ip (optional).
+ - **PasswordResetRequest**: token, user_id, created_at, expires_at, used_at, client_ip (optional).
+ - **UserInvitation**: token, inviter_id, email, created_at, expires_at, used_at, client_ip (optional).
 
 ## Success Criteria *(mandatory)*
 
@@ -96,6 +106,8 @@ Como usuario administrador, quiero acceder a un panel donde pueda crear, editar 
 - **SC-003**: Mensajes de error por credenciales inválidas deben ser genéricos y no permitir determinar la existencia de un correo (verificable mediante pruebas de respuestas equivalentes para emails existentes y no existentes).
 - **SC-004**: Un administrador puede crear un usuario y ese usuario puede autenticarse exitosamente (end-to-end test).
 - **SC-005**: Cobertura de pruebas para componentes críticos del flujo de autenticación y restablecimiento debe alcanzarse al menos al 80% (medido en CI), de acuerdo con la Constitución del proyecto.
+
+- **SC-006**: Las pruebas automatizadas que cubren casos con credenciales válidas deberán pasar de forma consistente en la suite de CI (evitar métricas 100% que puedan ser afectadas por factores externos).
 
 ### Non-functional / Operational Criteria
 
